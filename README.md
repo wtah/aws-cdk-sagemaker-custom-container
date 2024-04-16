@@ -18,6 +18,8 @@ Before you begin, ensure you have the following prerequisites installed and conf
 - AWS CDK
 - Docker
 - An AWS account and credentials configured with the necessary permissions to deploy resources for SageMaker, ECR (Elastic Container Registry), and other required services.
+- Node.js (tested with 18.X) and npm
+- Python 3.8 or later
 
 ## Getting Started
 
@@ -28,6 +30,13 @@ To get started, clone the repository and navigate to the project directory:
 ```bash
 git clone
 cd aws-cdk-sagemaker-custom-container
+```
+
+Then install dependencies (consider creating a venv for this project):
+
+```bash
+npm install && 
+pip install -r requirements.txt
 ```
 
 
@@ -51,7 +60,8 @@ The current container trains a toy example on the iris dataset. To modify the co
 The project includes a utility script for uploading data to the input buckets. To upload the toy example iris dataset, run the following command:
 
 ```bash
-python scripts/upload_training_data.py
+cd scripts && 
+python upload_training_data.py
 ```
 This loads a toy example iris dataset and uploads it to the input buckets (train,test,val).
 
@@ -83,6 +93,8 @@ You can set up CloudWatch metrics to monitor the training job. To do this. You c
 After you have trained the model the output bucket will contain multiple directories for each training run. In order to deploy the model you will need to copy the S3 Key of the model run that you want to deploy in production.
 
 This can be for example: `MyTrainingJob-1713250453263/output/model.tar.gz`.
+
+You can get the training job key from the output of the training job script.
 
 Set this key in the `bin/iac.ts` file in the `s3ModelKey` variable.
 

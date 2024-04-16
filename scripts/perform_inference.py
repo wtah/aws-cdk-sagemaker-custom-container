@@ -34,7 +34,7 @@ def invoke_sagemaker_endpoint(endpoint_name, payload):
 # Example usage
 endpoint_name = 'SageMakerInferenceStack-inference-endpoint'
 # Example payload - this should be modified according to your model's expected input
-payload = json.dumps([[1, 2, 3, 4]])
+payload = json.dumps([[5.2,4.1,1.5,0.1], [6.7,3.0,5.2,2.3]])
 
 result = invoke_sagemaker_endpoint(endpoint_name, payload)
 print("Response from SageMaker endpoint:", result)

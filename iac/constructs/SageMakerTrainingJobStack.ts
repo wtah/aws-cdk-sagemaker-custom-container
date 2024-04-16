@@ -14,38 +14,33 @@ export class SageMakerTrainingJobStack extends cdk.Stack {
 
   constructor(scope: Construct, id: string, props: SageMakerTrainingJobStackProps) {
     super(scope, id, props);
-    console.log('SageMakerTrainingJobStack directory:', props.directory);
     // Build and push the container image to ECR
     const dockerImage = new ecr_assets.DockerImageAsset(this, id + '-train-image', {
       directory: path.join(props.directory, 'docker'),
     });
-    console.log('Step 1');
     // Create S3 buckets for input data and output data
     const inputTrainDataBucket = new s3.Bucket(this, id + '-InputTrainDataBucket', {
       // Enables the deletion of non-empty buckets
       autoDeleteObjects: true,
       removalPolicy: cdk.RemovalPolicy.DESTROY, // specify removal policy according to your needs
     });
-    console.log('Step 2');
     const inputValidDataBucket = new s3.Bucket(this, id + '-InputValidationDataBucket', {
       // Enables the deletion of non-empty buckets
       autoDeleteObjects: true,
       removalPolicy: cdk.RemovalPolicy.DESTROY, // specify removal policy according to your needs
     });
-    console.log('Step 3');
+
     const inputTestDataBucket = new s3.Bucket(this, id + '-InputTestDataBucket', {
       // Enables the deletion of non-empty buckets
       autoDeleteObjects: true,
       removalPolicy: cdk.RemovalPolicy.DESTROY, // specify removal policy according to your needs
     });
-    console.log('Step 4');
 
     const outputDataBucket = new s3.Bucket(this, id + '-OutputDataBucket', {
             // Enables the deletion of non-empty buckets
       autoDeleteObjects: true,
       removalPolicy: cdk.RemovalPolicy.DESTROY, // specify removal policy according to your needs
     });
-    console.log('Step 5');
 
     // IAM role for Lambda function
     const lambdaRole = new iam.Role(this, 'LambdaExecutionRole', {
@@ -55,7 +50,7 @@ export class SageMakerTrainingJobStack extends cdk.Stack {
         iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess'),
       ],
     });
-    console.log('Step 6');
+
     // Add S3 access policies to Lambda role
     const s3Policy = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
@@ -76,7 +71,7 @@ export class SageMakerTrainingJobStack extends cdk.Stack {
       ],
     });
     lambdaRole.addToPolicy(s3Policy);
-    console.log('Step 7');
+
     // Create the Lambda function
     const sagemakerLambda =  new lambdaNodeJs.NodejsFunction(this, 'start-training-job-lambda', {
       entry: path.join(props.directory, 'lambda', 'index.js'), // Path to your Lambda entry file
@@ -91,7 +86,7 @@ export class SageMakerTrainingJobStack extends cdk.Stack {
       },
        role: lambdaRole,
     });
-    console.log('Step 8');
+
     // Grant the Lambda function permission to access the ECR repository
     dockerImage.repository.grantPull(lambdaRole);
 
